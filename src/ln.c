@@ -254,6 +254,27 @@ char * ln_c_str(ln_t * _n) {
     return out;
 }
 
+/**
+ * Load the number from a file.
+ */
+void ln_load(ln_t * _n, FILE * _fp) {
+    char buff[128];
+    size_t read_bytes;
+    while (1) {
+        read_bytes = fread(buff, 1, 128, _fp);
+        /* We haven't load any byte. It's time to stop. */
+        if (read_bytes == 0) break;
+        /* If the out is not filled, and we find a minus sign,
+           the number to load is negative, so we could mark
+           the result as negative. */
+        if (_n->int_sz == 0 && buff[0] == '-') _n->negative = 1;
+        /* Append the digits into the result. */
+        ln_append_str(_n, buff, read_bytes);
+        /* There is no more digits to read. */
+        if (read_bytes < 128) break;
+    }
+}
+
 void ln_write(ln_t * _n, FILE * _fp) {
     size_t it;
     if (_n->negative) fputc('-', _fp);

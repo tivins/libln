@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifndef LNMODE
+#define LNMODE "r"
+#endif
+
+#define LIBLN_VERSION "104" LNMODE
+
 typedef struct _ln_t {
     char * integer;
     size_t int_sz, int_cap;
@@ -13,6 +19,7 @@ typedef struct _ln_t {
 } ln_t;
 
 typedef void (*ln_progress_callback)(ln_t *, ln_t *, void *);
+typedef void (*ln_progressf_callback)(ln_t *, float, void *);
 
 enum { ln_Lesser = 1, ln_Equal = 2, ln_Greater = 4 };
 
@@ -58,7 +65,7 @@ size_t ln_max_sz(ln_t * _a, ln_t * b);
 void ln_show(ln_t * _n, const char * _sfx);
 void ln_write(ln_t * _n, FILE * _fp);
 void ln_dump(ln_t * _n);
-void ln_pow(ln_t * _out, int _a, int _e, ln_progress_callback _clbk);
+void ln_pow(ln_t * _out, int _a, int _e, ln_progressf_callback _clbk);
 int  ln_is_perfect(ln_t * _n);
 
 #endif

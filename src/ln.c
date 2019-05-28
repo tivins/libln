@@ -28,7 +28,7 @@ static void ln_increase_mem(size_t _v) {
     #ifdef LN_LOGMEM
     printf("Mem: %s%lu = %lu\n", _v < 0 ? '-': '+', _v, g_ln_memory.used_mem);
     #endif
-} 
+}
 
 static size_t allocated;
 static int nb_allocated;
@@ -38,7 +38,7 @@ static size_t deallocated;
 static ln_t tmp_int, tmp_swap;
 static ln_t _add_cpy;
 
-void ln_env_init() 
+void ln_env_init()
 {
     g_ln_memory.used_mem = 0;
     g_ln_memory.nb_allocs = 0;
@@ -86,16 +86,15 @@ void ln_clear(ln_t * _n) {
 
 /* clear all data, included the allocation of memory. */
 void ln_free(ln_t * _n) {
-    if (_n->integer) { 
-        free(_n->integer); 
-        nb_allocated--; 
+    if (_n->integer) {
+        free(_n->integer);
+        nb_allocated--;
         ln_increase_mem(-_n->int_cap);
     }
     ln_init(_n);
 }
 
 void ln_copy(ln_t * _src, ln_t * _dst) {
-    ln_clear(_dst);
     ln_reserve(_dst, _src->int_sz);
     memcpy(_dst->integer, _src->integer, _src->int_sz);
     _dst->int_sz = _src->int_sz;
@@ -431,7 +430,8 @@ void ln_mul(ln_t * _out, ln_t * _a, ln_t * _b) {
 
     /* first quick checks... */
     if (ln_is_zero(_a) || ln_is_zero(_b)) {
-        /* hum... clear ? _out.append(0) ? both ? do nothing ? */
+        /* resize to 0 */
+        ln_clear(_out);
         return;
     }
 
@@ -765,12 +765,12 @@ void ln_sqrt(ln_t * _out, ln_t * _n)
     ln_free(&tmp2);
 }
 
-void ln_pow(ln_t * _out, int _a, int _e, ln_progress_callback _clbk)
+void ln_pow(ln_t * _out, int _a, int _e, ln_progressf_callback _clbk)
 {
-    ln_t prog;
+    ln_t tmpi;
     ln_t na;
-    
-    ln_init(&prog);
+
+    ln_init(&tmpi);
     ln_init(&na);
 
     ln_append_int(&na, _a);
@@ -779,20 +779,20 @@ void ln_pow(ln_t * _out, int _a, int _e, ln_progress_callback _clbk)
     ln_append_int(_out, 1);
     for (int i = 0; i < _e; i++)
     {
-        ln_clear(&tmp_int);
-        ln_mul(&tmp_int, _out, &na);
-        ln_copy(&tmp_int, _out);
+        /* ln_clear(&tmpi); // not necessary. */
+        ln_mul(&tmpi, _out, &na);
+        ln_copy(&tmpi, _out);
 
-        ln_clear(&prog);
-        ln_append_int(&prog, (int)((i/(double)_e)*100));
-        if (_clbk) _clbk(_out, &prog, NULL);
+        if (_clbk) {
+            _clbk(_out, i/(float)_e*100.0f, NULL);
+        }
     }
-    
-    ln_free(&prog);
+
+    ln_free(&tmpi);
     ln_free(&na);
 }
 
-int ln_is_perfect(ln_t * _number) 
+int ln_is_perfect(ln_t * _number)
 {
     /*
     ln_t mod;
@@ -801,7 +801,7 @@ int ln_is_perfect(ln_t * _number)
     ln_clear(&div);
     ln_append(&div, 5);
     ln_mod(&mod, _number, &div);
-    
+
     ln_free(&mod);
     ln_free(&div);
     */

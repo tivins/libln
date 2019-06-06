@@ -8,7 +8,7 @@
 #define LNMODE "r"
 #endif
 
-#define LIBLN_VERSION "104" LNMODE
+#define LIBLN_VERSION "105" LNMODE
 
 typedef struct _ln_t {
     char * integer;
@@ -66,7 +66,7 @@ void ln_show(ln_t * _n, const char * _sfx);
 void ln_write(ln_t * _n, FILE * _fp);
 void ln_load(ln_t * _n, FILE * _fp);
 void ln_dump(ln_t * _n);
-void ln_pow(ln_t * _out, int _a, int _e, ln_progressf_callback _clbk);
+void ln_pow(ln_t * _out, int _a, int _e, ln_progressf_callback _clbk, int _restart);
 int  ln_is_perfect(ln_t * _n);
 
 #endif

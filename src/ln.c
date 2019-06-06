@@ -786,7 +786,7 @@ void ln_sqrt(ln_t * _out, ln_t * _n)
     ln_free(&tmp2);
 }
 
-void ln_pow(ln_t * _out, int _a, int _e, ln_progressf_callback _clbk)
+void ln_pow(ln_t * _out, int _a, int _e, ln_progressf_callback _clbk, int _restart)
 {
     ln_t tmpi;
     ln_t na;
@@ -796,11 +796,15 @@ void ln_pow(ln_t * _out, int _a, int _e, ln_progressf_callback _clbk)
 
     ln_append_int(&na, _a);
 
-    ln_clear(_out);
-    ln_append_int(_out, 1);
-    for (int i = 0; i < _e; i++)
+    if (_restart == 0) {
+        ln_clear(_out);
+        ln_append_int(_out, 1);
+    }
+
+
+    for (int i = _restart; i < _e; i++)
     {
-        /* ln_clear(&tmpi); // not necessary. */
+        ln_clear(&tmpi); /* // not necessary. */
         ln_mul(&tmpi, _out, &na);
         ln_copy(&tmpi, _out);
 
@@ -808,7 +812,6 @@ void ln_pow(ln_t * _out, int _a, int _e, ln_progressf_callback _clbk)
             _clbk(_out, i/(float)_e*100.0f, NULL);
         }
     }
-
     ln_free(&tmpi);
     ln_free(&na);
 }
